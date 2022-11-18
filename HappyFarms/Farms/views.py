@@ -85,17 +85,17 @@ def environment_data(request):
     end_dt = int(dt.replace(tzinfo=timezone.utc).timestamp())
     
     city = "London"
-    url_lat_long = 'http://api.openweathermap.org/geo/1.0/direct?q='+city+'&limit=1&appid=e242ded29b63399a54e9940a1937c1c7'
+    with open('api.properties') as f:
+        api_details = f.read()
+    api_details=json.loads(api_details,strict=False)    
+    url_lat_long = 'http://api.openweathermap.org/geo/1.0/direct?q='+city+'&limit=1&appid='+ api_details['api_key']
     lat_long_data = requests.get(url_lat_long).json()
     print(lat_long_data)
     long = lat_long_data[0]['lon']
     lat = lat_long_data[0]['lat']
-    url_pollution = 'http://api.openweathermap.org/data/2.5/air_pollution/history?lat='+str(lat)+'&lon='+str(long)+'&start='+str(start_dt)+'&end='+str(end_dt)+'&appid=e242ded29b63399a54e9940a1937c1c7'
+    url_pollution = 'http://api.openweathermap.org/data/2.5/air_pollution/history?lat='+str(lat)+'&lon='+str(long)+'&start='+str(start_dt)+'&end='+str(end_dt)+'&appid='+ api_details['api_key']
     pollution_data = requests.get(url_pollution).json()
     print(pollution_data)
-    with open('api.properties') as f:
-        api_details = f.read()
-    api_details=json.loads(api_details,strict=False)
     url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid='+ api_details['api_key']
     return JsonResponse({'data':'data'})
 
