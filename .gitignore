@@ -1,3 +1,4 @@
 hf_env/
 __pycache__/
 *.py[cod]
+*.properties
