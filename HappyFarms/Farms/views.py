@@ -90,12 +90,14 @@ def environment_data(request):
     api_details=json.loads(api_details,strict=False)    
     url_lat_long = 'http://api.openweathermap.org/geo/1.0/direct?q='+city+'&limit=1&appid='+ api_details['api_key']
     lat_long_data = requests.get(url_lat_long).json()
-    print(lat_long_data)
     long = lat_long_data[0]['lon']
     lat = lat_long_data[0]['lat']
     url_pollution = 'http://api.openweathermap.org/data/2.5/air_pollution/history?lat='+str(lat)+'&lon='+str(long)+'&start='+str(start_dt)+'&end='+str(end_dt)+'&appid='+ api_details['api_key']
     pollution_data = requests.get(url_pollution).json()
     print(pollution_data)
+    pollution = pollution_data['list']
+    for components in pollution:
+        print(components['components'])
     url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid='+ api_details['api_key']
     return JsonResponse({'data':'data'})
 
