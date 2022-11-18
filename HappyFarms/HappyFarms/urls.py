@@ -21,6 +21,7 @@ from Farms import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^api/cities/$', views.city_list),
+    re_path(r'^api/components/$', views.component_list),
 	re_path(r'^api/cities/(?P<pk>[0-9]+)$', views.cities_detail),
     path('', include('Farms.urls'))
 ]
