@@ -1,6 +1,6 @@
 import json
 import requests
-from .models import City
+from .models import City,ComponentsData
 from .forms import CityForm
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -96,12 +96,15 @@ def environment_data(request):
     pollution_data = requests.get(url_pollution).json()
     print(pollution_data)
     pollution = pollution_data['list']
+    model_object_list = []
     for components in pollution:
+        components['components']['city'] = city
+        components['components']['date'] = datetime.datetime.fromtimestamp(components['dt'])
         print(components['components'])
-    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid='+ api_details['api_key']
+        model_object_list.append(ComponentsData(**components['components']))
+    ComponentsData.objects.bulk_create(model_object_list,ignore_conflicts=True)
     return JsonResponse({'data':'data'})
 
-# Create your views here.
 def index(request):
     with open('api.properties') as f:
         api_details = f.read()

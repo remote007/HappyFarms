@@ -18,7 +18,8 @@ class CityDetails(models.Model):
         return self.name
 
 class ComponentsData(models.Model):
-    date = models.CharField(max_length=25)
+    city = models.CharField(max_length=25)
+    date = models.DateTimeField()
     co = models.FloatField()
     no = models.FloatField()
     no2 = models.FloatField()
@@ -28,5 +29,5 @@ class ComponentsData(models.Model):
     pm10 = models.FloatField()
     nh3 = models.FloatField()
 
-    def __str__(self):
-        return self.name
+    class Meta:
+        unique_together = ('city', 'date',)
