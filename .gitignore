@@ -2,3 +2,4 @@ hf_env/
 __pycache__/
 *.py[cod]
 *.properties
+db.sqlite3
