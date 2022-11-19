@@ -1,3 +1,4 @@
+import logging
 import json
 import requests
 from datetime import timezone
@@ -6,33 +7,26 @@ from .models import City, ComponentsData
 from .forms import CityForm
 from django.shortcuts import render
 from django.http import JsonResponse, HttpRequest
-from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .serializers import *
-
+logger = logging.getLogger('file')
 
 @api_view(['GET'])
 def city_envcomponents(request, city):
-    if request.method == 'GET':
-        data = []
-        # city = request.GET.get('city')
-        print(city)
-        components = ComponentsData.objects.filter(city=city)
-        no_list = []
-        so2_list = []
-        co_list = []
-        date_list = []
-        for i in components:
-            no_list.append(round(i.no))
-            co_list.append(round(i.co))
-            so2_list.append(round(i.so2))
-            date_list.append(i.date)
-        return JsonResponse({'no_list': no_list, 'co_list': co_list, 'so2_list': so2_list})
-
-        serializer = CityNOSerializer(
-            components, context={'request': request}, many=True)
-        print(type(serializer.data))
-        return Response({'data': serializer.data})
+    try:
+     components = ComponentsData.objects.filter(city=city)
+    except Exception as exception:
+        logger.error("Exception",exception)
+    no_list = []
+    so2_list = []
+    nh3_list = []
+    co_list = []
+    for component in components:
+        no_list.append(round(component.no))
+        co_list.append(round(component.co))
+        so2_list.append(round(component.so2))
+        nh3_list.append(round(component.nh3))
+    return JsonResponse({'no_list': no_list, 'co_list': co_list, 'so2_list': so2_list, 'nh3_list': nh3_list})
 
 
 def environment_data(request, city):
@@ -66,11 +60,15 @@ def environment_data(request, city):
         model_object_dict['no'] = components['components']['no']
         model_object_dict['co'] = components['components']['co']
         model_object_dict['so2'] = components['components']['so2']
+        model_object_dict['nh3'] = components['components']['nh3']
         print(model_object_dict)
 
         model_object_list.append(ComponentsData(**model_object_dict))
-    ComponentsData.objects.bulk_create(
+    try:
+     ComponentsData.objects.bulk_create(
         model_object_list, ignore_conflicts=True)
+    except Exception as exception:
+        logger.error("Exception",exception)
     return JsonResponse({'data': 'data'})
 
 
@@ -80,7 +78,10 @@ def index(request):
     api_details = json.loads(api_details, strict=False)
     url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=' + \
         api_details['api_key']
-    cities = City.objects.all()
+    try:    
+        cities = City.objects.all()
+    except Exception as exception:
+        logger.error("Exception",exception)
     weather_data = []
     form = CityForm()
     if request.method == 'POST':

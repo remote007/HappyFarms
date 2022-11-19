@@ -17,6 +17,7 @@ class ComponentsData(models.Model):
     co = models.FloatField()
     no = models.FloatField()
     so2 = models.FloatField()
+    nh3 = models.FloatField()
 
     class Meta:
         unique_together = ('city', 'date',)
